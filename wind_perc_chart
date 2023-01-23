@@ -1,0 +1,62 @@
+
+
+# Onsidedness by Threshold 
+
+## Generates a chart that lets you see the win % had we set the take-action threshold at various points.   
+
+def ons_x_thresh(fv, ob='', title = ''):
+    '''
+    
+    fv - forecast value:  Take the 'meas_cert' value you received in the jsons JR has sent you 
+    '''
+    if not isinstance(fv, pd.DataFrame):
+        X = pd.DataFrame( {'fv':fv, 'ob':ob} )
+    else:
+        X = fv
+    cor = round(X.corr().iloc[0,1], 4) 
+    titleString = title + ' | underlying rho: '+str(cor)[0:]
+    onsLine = [ ons(X.iloc[:,0], X.iloc[:,1], co = i) for i in np.arange(0, .99, .01) ]
+    axisMin = min( .47, min(onsLine) )
+    axisMax = max( .75,  max(onsLine) )
+    fig = px.line(onsLine, title = titleString,
+                 labels={
+                     "value": "Onsidedness",
+                     "index": "Percentage Threshold"
+                 }
+                 ).update_yaxes(range = [axisMin, axisMax]).update_layout(showlegend=False)
+    
+    return(fig.update_traces(line_color='#03213a'))
+    
+# Requires:
+
+import plotly.express as px
+import numpy as np
+import pandas as pd
+
+def ons(fv, ov='', co=.5, coo = 0, dontPrint = False):
+    """
+    Measure win % with cutoffs and thresholds as parametered
+    """
+    if isinstance(ov, float):
+        if fv.shape[1] == 2:
+            if isinstance(ov, float): # then user assigned by place in the intuitive way, which handles this resetting:
+                co = ov  
+            ov = fv.iloc[:,1]
+            fv = fv.iloc[:,0]
+    fv = fv[~pd.isnull(fv) & ~pd.isnull(ov)]
+    ov = ov[~pd.isnull(fv) & ~pd.isnull(ov)]
+    if co < 1:
+        co = np.quantile(abs(fv), co)
+    if coo < 1:
+        coo= np.quantile(abs(ov), coo)
+    upRight = fv[(fv >= co) & (ov >= coo)] # >= in case var is categorical 
+    upWrong = fv[(fv >= co) & (ov <= coo)]
+    dnRight = fv[(fv <= -co)  & (ov <= -coo)]
+    dnWrong = fv[(fv <= -co) & (ov >= -coo)]
+    nObs = len(upRight) + len(dnRight) + len(upWrong) + len(dnWrong)
+    fin = ( len(upRight)+len(dnRight) ) / nObs
+    if dontPrint:
+        print('nObs:', nObs)
+        #print('corr:', round(pd.concat([fv,ov], axis=1).corr()[0,1], 3))
+    return(round(fin, 4))
+           
