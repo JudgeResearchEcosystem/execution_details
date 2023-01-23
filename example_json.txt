@@ -1,0 +1,22 @@
+
+{"close_only" : "False", #        # Does this signal govern only exiting current positions?
+           "client_id" : "JR_1", #         # Planning ahead for multiple senders; can be ignored for now
+            "time_block" : "", #             # beginning of discrete time period  
+            "asset_flex" : "True", #         # OK to execute across highly correlated assets e.g. spot + perps if executing party wants
+            "asset_base" : "BTC-USD", #      # Built so:  asset_base + asset_spec = e.g. "BTC-USDT-SPOT" 
+            "asset_spec" : "T-SPOT", #       # specific instrument most used in modeling; "general" if inappropriate
+              "strat_id" : "_BTC_and_ETH_1", # Built so:  client_id + strat_id = full strategy name 
+             "close_all" : "True", #         # if close_all: close position in any asset that contravenes current order (e.g. short when order_side == "long")     
+            "order_side" : "long", #         # long/short 
+            "order_type" : "", #             # make/take; likely left blank
+            "order_size" : "1", #            # expressed as %
+             "cur_price" : "", #             # price AI last observed; probably ~40 seconds out of date
+            "targ_price" : "", #             # expressed as %, not exact price 
+            "cert_meas" : "", #             # an unscaled measure of certainty (use this to infer signal accuracy)  
+              "max_perc" : "", #             # don't enter if abs(cur_price - your quote) / cur_price > max_perc
+              "wait_min" : "1",              # e.g.: if you're 2 minutes out & hit target, don't close even if u hit targ  
+         "max_wait_fill" : "5", #            # don"t buy if not filled after this number of minutes
+            "stop_price" : "", #             # for now will just mirror target price size
+         "stop_wait_min" : "",               # unlikely ever used
+              "max_hold" : "150" #           # in minutes if no subsequent live_send tells you to close, or no target hit, close down position
+            }
