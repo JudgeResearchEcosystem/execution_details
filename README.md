@@ -24,7 +24,7 @@ This repo is meant for Judge Research's execution partners.  The goal is to make
 
 - For complex reasons, asessing the signal this way will bias your interpretation of the signals' accuracy downards.  However, because you get 'meas_cert' 96 times a day, you can assess the signal faster in a matter of days; as opposed to the weeks or more than a month in might take to get to large sample properties among the subset of signals that suggest taking a new position.
 
-- We have included an [easy function](https://github.com/JudgeResearchEcosystem/execution_details/edit/main/wind_perc_chart) for you to call to compare 'meas_cert' to the observed directional change in the market. 
+- We have included an [easy function](https://github.com/JudgeResearchEcosystem/execution_details/blob/main/wind_perc_chart) for you to call to compare 'meas_cert' to the observed directional change in the market. 
 
 ## Interpreting Our Signal
 
