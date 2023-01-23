@@ -4,10 +4,15 @@
 
 ## Generates a chart that lets you see the win % had we set the take-action threshold at various points.   
 
+## example call:  
+
+
+
 def ons_x_thresh(fv, ob='', title = ''):
     '''
     
-    fv - forecast value:  Take the 'meas_cert' value you received in the jsons JR has sent you 
+    fv - forecast values:  Take the 'meas_cert' value you received in the jsons JR has sent you 
+    ob - observed values:  typically the portion of volatility that is the period's directional movement:  (close - open) / (high - low)
     '''
     if not isinstance(fv, pd.DataFrame):
         X = pd.DataFrame( {'fv':fv, 'ob':ob} )
