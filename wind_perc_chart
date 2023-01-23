@@ -5,8 +5,9 @@
 ## Generates a chart that lets you see the win % had we set the take-action threshold at various points.   
 
 ## example call:  
-
-
+## ons_x_thresh( fv = jsons_from_fr['meas_cert'], 
+##               ob = (our_ohlcv['close'] - our_ohlcv['open']) / (our_ohlcv_data['high'] - our_ohlcv_data['low']) 
+##             )
 
 def ons_x_thresh(fv, ob='', title = ''):
     '''
