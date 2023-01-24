@@ -39,7 +39,7 @@ This necessitates a small interpretation script necessarily sitting on your serv
             }
 ```
 
-## Explaining Non-Obvious Points Aspects of the Above
+## Explaining Non-Obvious Aspects of the Above
 
 Hopefully the notes above explain most fields, but some additional points should be made:
 
