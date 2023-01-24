@@ -30,7 +30,7 @@ This repo is meant for Judge Research's execution partners.  The goal is to make
 
 At the highest level, the JSON is designed so the AI can send you signals without having to know your current price read or positions.  This means you'll have to interpret the JSON a bit more than a straight-up buy/sell/close order.   
 
-See the [example signal](https://github.com/JudgeResearchEcosystem/execution_details/blob/main/example_json.txt) page to learn more.
+See the [example signal](https://github.com/JudgeResearchEcosystem/execution_details/blob/main/example_json_and_exec_details.md) page to learn more.
 
 
 
