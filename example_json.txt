@@ -1,10 +1,6 @@
 
-## High-Level Points:
-
-
-
 {"close_only" : "False", #        # Does this signal govern only exiting current positions?
-           "client_id" : "JR_1", #         # Planning ahead for multiple senders; can be ignored for now
+           "client_id" : "JR_1", #          # Planning ahead for multiple senders; can be ignored for now
             "time_block" : "", #             # beginning of discrete time period  
             "asset_flex" : "True", #         # OK to execute across highly correlated assets e.g. spot + perps if executing party wants
             "asset_base" : "BTC-USD", #      # Built so:  asset_base + asset_spec = e.g. "BTC-USDT-SPOT" 
