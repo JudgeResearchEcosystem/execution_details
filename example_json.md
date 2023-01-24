@@ -1,3 +1,6 @@
+
+
+```
 {"close_only" : "False", #        # Does this signal govern only exiting current positions?
            "client_id" : "JR_1", #          # Planning ahead for multiple senders; can be ignored for now
             "time_block" : "", #             # beginning of discrete time period  
@@ -19,3 +22,4 @@
          "stop_wait_min" : "",               # unlikely ever used
               "max_hold" : "150" #           # in minutes if no subsequent live_send tells you to close, or no target hit, close down position
             }
+```
