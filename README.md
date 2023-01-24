@@ -12,6 +12,12 @@ This repo is meant for Judge Research's execution partners.  The goal is to make
 1.  Our primary live signal-sending server has a elastic IP address so you can whitelist it.
 2.  You'll likely need to look at the **example JSON** and then have a conversation or two with us so you can be sure you are interpreting things correctly.  
 
+## Interpreting Our Signal
+
+At the highest level, the JSON is designed so the AI can send you signals without having to know your current price read or positions.  This means you'll have to interpret the JSON a bit more than a straight-up buy/sell/close order.   
+
+See the [example signal](https://github.com/JudgeResearchEcosystem/execution_details/blob/main/example_json_and_exec_details.md) page to learn more.
+
 ## Very Important Points on Assessing the Signal
 
 - Roughly 80% of the time our signals are not strong enough to suggest taking a new position. We include, however, a measure of certainty in every signal, 'meas_cert' so in a matter of a few days you can have a reliably large sample from which to infer the quality of our signals.  
@@ -25,13 +31,6 @@ This repo is meant for Judge Research's execution partners.  The goal is to make
 - For complex reasons, asessing the signal this way will bias your interpretation of the signals' accuracy downards.  However, because you get 'meas_cert' 96 times a day, you can assess the signal faster in a matter of days; as opposed to the weeks or more than a month in might take to get to large sample properties among the subset of signals that suggest taking a new position.
 
 - We have included an [easy function](https://github.com/JudgeResearchEcosystem/execution_details/blob/main/wind_perc_chart) for you to call to compare 'meas_cert' to the observed directional change in the market. 
-
-## Interpreting Our Signal
-
-At the highest level, the JSON is designed so the AI can send you signals without having to know your current price read or positions.  This means you'll have to interpret the JSON a bit more than a straight-up buy/sell/close order.   
-
-See the [example signal](https://github.com/JudgeResearchEcosystem/execution_details/blob/main/example_json_and_exec_details.md) page to learn more.
-
 
 
 ## Other Resources
