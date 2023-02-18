@@ -22,10 +22,10 @@ This necessitates a small interpretation script necessarily sitting on your serv
             "order_side" : "long", #         # long/short 
             "order_type" : "", #             # make/take; likely left blank & to our execution partners' discretion
             "order_size" : "1", #            # expressed as %
-             "cur_price" : "", #             # price AI last observed; probably ~40 seconds out of date
-            "targ_price" : "", #             # expressed as %, not exact price 
-            "cert_meas" : "", #              # an unscaled measure of certainty (use this to infer signal accuracy)  
-              "max_perc" : "", #             # don't enter if abs(cur_price - your quote) / cur_price > max_perc
+             "cur_price" : "", #             # string; price AI last observed; probably ~40 seconds out of date
+            "targ_price" : "", #             # float; expressed as %, not exact price 
+            "cert_meas" : "", #              # float; an unscaled measure of certainty (use this to infer signal accuracy)  
+              "max_perc" : "", #             # float; don't enter if abs(cur_price - your quote) / cur_price > max_perc
               "wait_min" : "1",              # e.g.: if you're 2 minutes out & hit target, don't close even if u hit targ  
          "max_wait_fill" : "5", #            # don"t buy if not filled after this number of minutes
             "stop_price" : "", #             # for now will just mirror target price size
