@@ -34,5 +34,4 @@ See the [example signal](https://github.com/JudgeResearchEcosystem/execution_det
 
 
 ## Other Resources
- 
-- Our [wiki](https://judgeresearch.notion.site/The-Judge-Research-Wiki-37d2ae0159254928b483f01fec87b576) lays out the larger picture, and walks you through how to use our SDK & API to contribute features. 
+- removed wiki
