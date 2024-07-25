@@ -24,7 +24,7 @@ The price targets are mostly composed of a forecast of (high - low) over the com
 
 ### Stop Losses
 
-The stop price for now is a simple mirror image of the targ_price.  Accordingly, it is recommended you scale a bit more than sqrt(18) for the time being.  Modeling of different stop-loss strategies do not have clear findings, other than that a small stop loss, around 1.25% will condense the win rate to just under 60% but create a distribution of trade profitability with much larger profits than losses.  However, it does so at the cost of overall profitability. Conversely, if smaller stops allow you to allow for greater leverage, than it may be worth it.  
+The stop price for now is a simple mirror image of the targ_price.  Accordingly, it is recommended you scale the *stop_price* field by a bit more than sqrt(18) for the time being.  Modeling of different stop-loss strategies do not have clear findings, other than that a small stop loss, around 1.25% will condense the win rate to just under 60% but create a distribution of trade profitability with much larger profits than losses.  However, it does so at the cost of overall profitability. Conversely, if smaller stops allow you to allow for greater leverage, than it may be worth it.  
 
 ### Use of Leverage
 
