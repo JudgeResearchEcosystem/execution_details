@@ -1,6 +1,8 @@
-# Example JSON And Exeution Details
+# Example JSON Object And Exeution Details
 
-This should make it clear how to interpret the JSON.  In our experience, an efficient workflow for people setting up for the first time is to read through these examples and then have a follow-up conversation to confirm interpretation & recollection of the below
+This should make it clear how to interpret the JSON object we send to your API.  Alternatively, you may be looking at CSVs in a Dropbox folder, where each column name is a key in the JSON object, and each row is a new instance.
+
+In our experience, an efficient workflow for people setting up for the first time is to read through these examples and then have a follow-up conversation to confirm interpretation & recollection of the below
 
 ### High Level Goals
 
