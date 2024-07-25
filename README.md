@@ -1,5 +1,5 @@
 # Execution Details
-This repo is meant for Judge Research's execution partners.  Its goal is to make it as easy as possible to take in, assess and execute our signals.    
+This repo is meant for Judge Research's execution partners.  Its goal is to make it as easy as is possible to take in, assess and execute our signals.    
 
 Let's try to organize our conversations about execution around this (small) repo.  **Please read this read.me and the [example JSON](https://github.com/JudgeResearchEcosystem/execution_details/blob/main/example_json_and_exec_details.md) page before scheduling a call to answer questions about execution.**  
 
