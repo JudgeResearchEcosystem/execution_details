@@ -17,7 +17,7 @@ Let's try to organize our conversations about execution around this (small) repo
 
 ## Interpreting Our Signal
 
-At the highest level, the JSON is designed so the AI can send you signals without having to know your current price read or positions.  This means you'll have to interpret the JSON a bit more than a straight-forward buy/sell/close order.   
+At the highest level, the JSON is designed so the AI can send you signals without having to know your current price read or positions.  This means you will have to interpret the JSON a bit more than a straight-forward buy/sell/close order.   
 
 See the [example signal](https://github.com/JudgeResearchEcosystem/execution_details/blob/main/example_json_and_exec_details.md) page to learn more.
 
