@@ -12,14 +12,14 @@ Let's try to organize our conversations about execution around this (small) repo
 ## Getting Started
 
 1.  Let us know if you need an IP address to be whitelisted.
-2.  You will need to look at the **example JSON** page in this repo and then have a conversation with us so you can be sure you are interpreting things correctly.
+2.  You will need to look at the [example JSON](https://github.com/JudgeResearchEcosystem/execution_details/blob/main/example_json_and_exec_details.md)* page in this repo and then have a conversation with us so you can be sure you are interpreting things correctly.
 3.  On the day execution should start, we should schedule a short call for a final review of the logic you have implemented.  
 
 ## Interpreting Our Signal
 
 At the highest level, the JSON is designed so the AI can send you signals without having to know your current price read or positions.  This means you will have to interpret the JSON a bit more than a straight-forward buy/sell/close order.   
 
-See the [example signal](https://github.com/JudgeResearchEcosystem/execution_details/blob/main/example_json_and_exec_details.md) page to learn more.
+See the [example JSON](https://github.com/JudgeResearchEcosystem/execution_details/blob/main/example_json_and_exec_details.md) page to learn more.
 
 ## Very Important Points on Assessing Signal Accuracy
 
