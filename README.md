@@ -1,7 +1,7 @@
 # Execution Details
 This repo is meant for Judge Research's execution partners.  Its goal is to make it as easy as is possible to take in, assess and execute our signals.    
 
-Let's try to organize our conversations about execution around this (small) repo.  **Please read this read.me and the [example JSON](https://github.com/JudgeResearchEcosystem/execution_details/blob/main/example_json_and_exec_details.md) page before scheduling a call to answer questions about execution.**  
+Let's try to organize our conversations about execution around this (small) repo.  **Please read this read.me and the [example signal](https://github.com/JudgeResearchEcosystem/execution_details/blob/main/example_json_and_exec_details.md) page before scheduling a call to answer questions about execution.**  
 
 ## Basic Workflow
 
@@ -12,14 +12,14 @@ Let's try to organize our conversations about execution around this (small) repo
 ## Getting Started
 
 1.  Let us know if you need an IP address to be whitelisted.
-2.  You will need to look at the [example JSON](https://github.com/JudgeResearchEcosystem/execution_details/blob/main/example_json_and_exec_details.md) page in this repo and then have a conversation with us so you can be sure you are interpreting things correctly.
+2.  You will need to look at the [example signal](https://github.com/JudgeResearchEcosystem/execution_details/blob/main/example_json_and_exec_details.md) page in this repo and then have a conversation with us so you can be sure you are interpreting things correctly.
 3.  On the day execution should start, we should schedule a short call for a final review of the logic you have implemented.  
 
 ## Interpreting Our Signal
 
-At the highest level, the JSON is designed so the AI can send you signals without having to know your current price read or positions.  This means you will have to interpret the JSON a bit more than a straight-forward buy/sell/close order.   
+At the highest level, the JSON signal is designed so the AI can send you signals without having to know your current price read or positions.  This means you will have to interpret the JSON a bit more than a straight-forward buy/sell/close order.   
 
-See the [example JSON](https://github.com/JudgeResearchEcosystem/execution_details/blob/main/example_json_and_exec_details.md) page to learn more.
+See the [example signal](https://github.com/JudgeResearchEcosystem/execution_details/blob/main/example_json_and_exec_details.md) page to learn more.
 
 ## Very Important Points on Assessing Signal Accuracy
 
