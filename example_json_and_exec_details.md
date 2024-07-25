@@ -2,13 +2,37 @@
 
 This should make it clear how to interpret the JSON object we send to your API.  Alternatively, you may be looking at CSVs in a Dropbox folder, where each column name is a key in the JSON object, and each row is a new instance.
 
-In our experience, an efficient workflow for people setting up for the first time is to read through these examples and then have a follow-up conversation to confirm interpretation & recollection of the below
+In our experience, an efficient workflow for people setting up for the first time is to read through these examples and then have a follow-up conversation to confirm interpretation & recollection of the below.
 
 ### High Level Goals
 
-The design of our messages is a bit idiosyncratic.  It is meant as a message that (1) can be sent without knowledge of the current state of your portfolio or previous orders, and (2) gives appropriately high-level instructions without making execution-level decisions for you.  
+The design of our messages is a bit idiosyncratic.  It is designed so messages can (1) be sent without knowledge of the current state of your portfolio or previous orders, and (2) instructions are appropriately high-level while leaving execution details up to you.  
 
-This necessitates a small interpretation script necessarily sitting on your servers.  The goal of this repo is to make that drafting that script very fast & easy.
+This necessitates a small script that sits on your servers and interprets the signal.  The goal of this repo is to make drafting that script very fast & easy.
+
+## The Basics
+
+Prices are expressed as percentages, so you may gain exposure on a set of assets based on our directional forecasts.  The signals are trained on Binance PERPs, but should be read as directional forecasts that apply across highly correlated assets.  
+
+Look over the below JSON object.  close_only=False implies that our AI thinks the signal is strong enough that taking a new position is warranted.  So a large majority of signals will have close_only=**True**.  That means you'd only listen to this signal in terms of governing a decision to stay in or exit an already-open position.  If the cert_meas field is above .03 for a currently-open short, or below -.03 for a long, you should **exit**.  Otherwise, you should do nothing.  
+
+The average hold time for a position is usually multi-hour, so the vast majority of signals you receive will end up being interpreted as 'do nothing.'
+
+### Position-Exiting Logic
+
+The price targets are mostly composed of a forecast of (high - low) over the coming 15 minute bar.  Therefore, **should** you use price targets, you should scale them by the square root of *t* for the mean hold time.  So if that is 4.5 hours, then sqrt(18) * targ_price would be an OK way to go.  However, target prices of course only use information up to time *t*; whereas the above exit rule allows future cert_meas values to speak as the market evolves.  
+
+### Stop Losses
+
+The stop price for now is a simple mirror image of the targ_price.  Accordingly, it is recommended you scale a bit more than sqrt(18) for the time being.  Modeling of different stop-loss strategies do not have clear findings, other than that a small stop loss, around 1.25% will condense the win rate to just under 60% but create a distribution of trade profitability with much larger profits than losses.  However, it does so at the cost of overall profitability. Conversely, if smaller stops allow you to allow for greater leverage, than it may be worth it.  
+
+### Use of Leverage
+
+The close_only=False signals cluster heavily. They perform better when the clusters are large.  It is recommended that you wait 15 minutes after a new position is taken, and if the signal is still reading close_only=False in the same direction, you take another position.  
+
+How you manage risk is up to you, but we note that it is highly capital inefficient to not use some leverage.  Roughly 70% of the time, you will *not* be in a position.
+
+If you have faith in your stops being filled, our backtests are based on 5x leverage and multiply our stops by min(.026, (.0025 + stop_price * sqrt(18)). So the max per-trade drawdown should be 13%.  Of course to replicate this in the real world requires an assumption of certainty in your own execution tech.
 
 ## An Example With Some Notes
 
@@ -34,7 +58,7 @@ This necessitates a small interpretation script necessarily sitting on your serv
          "stop_wait_min" : "", #             # similar to 'wait_min' but for stops; unlikely ever used
               "max_hold" : "150", #          # in minutes if no subsequent live_send tells you to close, or no target hit, close down position
                    'ph_1': '', #             # placeholder fields so the jsons can keep the same length if we need additional fields to add.
-                   'ph_2': '',
+                   'ph_2': '',               # currently ph_1 & ph_2 are occupied, but mainly of use to us, not you.  
                    'ph_3': '',
                    'ph_4': '',
                    'ph_5': '',
@@ -46,17 +70,19 @@ This necessitates a small interpretation script necessarily sitting on your serv
 Hopefully the notes above explain most fields, but some additional points should be made:
 
 - *'close_only'* - If False, take a new position w/ this JSON.  Most signals are set to 'True', that is, not strong enough to warrant taking a new position, but may effect any positions that are already open.  
---**Note**  Even when no previous position might be open, we still send signals out so you can use the 'meas_cert' and 'order_side' fields together to quickly get to large sample properties regarding this signal - as opposed to if you had to wait for the more rare 'close_only':False jsons to get to large sample size.  
+- *'targ_price'* - The price targets are mostly composed of a forecast of (high - low) over the coming 15 minute bar.       
+--  **Note:** *'targ_price'* should not be used to assess the signal's accuracy.
+- *'stop_price'* - The stop price for now is a simple mirror image of the targ_price.    
+-- You should adjust your target price limit orders as new jsons come in and give updated values 
+- *'order_size'* - This will grow more sophisticated.  For now, it is left at 1.  You may apply your own position sizing judgements, if you would like.  Our our tests (backtests + live data reports) assume you are comfortable with a 5x leverage and stops of max size .024%.  Therefore, max drawdowns, assuming functioning stops, would be 12%.   
+- *'cert_meas'* - Not a probability, in that it is not strictly bound btwn 0 - 1.  If min-max scaled on its own distribution, it is a good measure of certainty that can be used as one major ingredient in sizing positions.
+-- Forecasts with *cert_meas* very close to zero will be about as directionally accurate as a coin toss, whereas larger values will enjoy win odds greater than 2-1.   
+- *'wait_min'* - If your target price is hit, but with only *wait_min* minutes to go, leave open, in case the next forecast is in the same direciton.
+
+These three fields will be the same in every field for a given asset:
+
 - *'asset_flex'* - Can you use your discretion on how to gain exposure?  For instance, using perps & spot markets.  While probably the most idiosyncratic field, it will be set to True for at least the first two quarters of 2023.  We encourage you to layer on your own microstructure models to improve performance.  
 - *'asset_base' + 'asset_spec'* - pasted together, these fields tell you what the main model was trained on.  They are separate so, in cases where 'asset_flex':True, you can use 'asset_base' in your JSON interpretation scripts.  For example, with 'asset_base':'ETH-USD' you might want to gain exposure via spot and perp markets   
-- *'targ_price'* - The price targets are aggressively large.  Most position-exiting will be at the end of a time period, when the next json's sign flips.  
---  **Note:** *'targ_price'* should not be used to assess the signal's accuracy, other than when *close_only* = True.
--- You should adjust your target price limit orders as new jsons come in and give updated values 
-- *'order_size'* - This will grow more sophisticated in the next several weeks.  For now, it is left at 1.  You may apply your own position sizing judgements, if you would like.  
-- *'cert_meas'* - Not a probability, in that it is not strictly bound btwn 0 - 1.  Rather, it has a soft boundary around -1 and 1.  If min-max scaled on its own distribution, it is a good measure of certainty that can be used as one major ingredient in sizing positions.
--- Forecasts with *cert_meas* very close to zero will only be accurate ~57% of the time, whereas larger values will enjoy win odds greater than 2-1.   
-- *'wait_min'* - If your target price is hit, but with only *wait_min* minutes to go, leave open, in case the next forecast is in the same direciton
-
 
 
 
