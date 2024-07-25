@@ -7,7 +7,7 @@ Let's try to organize our conversations about execution around this (small) repo
 
 1.  Every 1-3 minutes, we send a JSON to an endpoint you specify.  You receive that JSON at the same time as our other executing partners if you give us an API endpoint; 5-6 seconds later if you are using the dropbox folder.
 2.  We do not need to know the current status of any orders, or other such informtaion.  We never custody any assets or execute any orders ourselves.  We have designed the JSON so the communication flow is purely from our AI -> your servers, other than: 
-3.  Once every few days we ask you send us your PnL & trade records.  
+3.  Once a week we ask you send us your PnL & trade records.  
     
 ## Getting Started
 
