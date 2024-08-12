@@ -14,13 +14,13 @@ This necessitates a small script that sits on your servers and interprets the si
 
 Prices are expressed as percentages, so you may gain exposure on a set of assets based on our directional forecasts.  The signals are trained on Binance PERPs, but should be read as directional forecasts that apply across highly correlated assets.  
 
-Look over the below JSON object.  close_only=False implies that our AI thinks the signal is strong enough that taking a new position is warranted.  So a large majority of signals will have close_only=**True**.  That means you'd only listen to this signal in terms of governing a decision to stay in or exit an already-open position.  If the cert_meas field is above .03 for a currently-open short, or below -.03 for a long, you should **exit**.  Otherwise, you should do nothing.  
+Look over the below JSON object.  close_only=False implies that our AI thinks the signal is strong enough that taking a new position is warranted.  So a large majority of signals will have close_only=**True**.  That means you'd only listen to this signal in terms of governing a decision to stay in or exit an already-open position.  If the cert_meas field's absolute value is above -1.5x that of the cert_meas value upon entering a position, you should **exit**.  Otherwise, you should do nothing.  
 
 The average hold time for a position is usually multi-hour, so the vast majority of signals you receive will end up being interpreted as 'do nothing.'
 
 ### Position-Exiting Logic
 
-The price targets are mostly composed of a forecast of (high - low) over the coming 15 minute bar.  Therefore, **should** you use price targets, you should scale them by the square root of *t* for the mean hold time.  So if that is 4.5 hours, then sqrt(18) * targ_price would be an OK way to go.  However, target prices of course only use information up to time *t*; whereas the above exit rule allows future cert_meas values to speak as the market evolves.  
+The price targets are mostly composed of a forecast of (high - low) over the coming 15 minute bar.  Therefore, **should** you use price targets, you should scale them by the square root of *t* for the mean hold time.  So if that is 10 hours, then sqrt(10*4) * targ_price would be an OK way to go.  However, target prices of course only use information up to time *t*; whereas the above exit rule allows future cert_meas values to speak as the market evolves.  
 
 ### Stop Losses
 
