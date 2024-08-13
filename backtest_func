@@ -114,6 +114,9 @@ class fc_thresh(backtesting.Strategy):
 
         #region --- 2. First handle existing positions --- 
         for trade in self.trades:     
+            if close_only_t: 
+                if np.sign(self.last_exit_cond) == np.sign(fc_t):
+                    trade.close()
             if hasattr(trade, 'revised_entry_time'):
                 entry_time = trade.revised_entry_time
             else:
