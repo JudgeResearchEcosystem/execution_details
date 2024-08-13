@@ -1,0 +1,183 @@
+### --- Below is a backtest.py backtest object.  
+### --- Relevant links:
+# https://github.com/kernc/backtesting.py
+#
+#
+# -------------------
+### --- An example call can be found commented out at the bottom
+### --- Beware that backtest.py's plotting function relies on bokeh, 
+### --- which is finicky in terms of the versioning of related packages.  
+### --- some imports that were necessary to work w/ an interactive window:
+#region --- imports ---
+# import backtesting
+# from IPython.core.display import display, HTML
+# from bokeh.io import output_notebook, show
+# from bokeh.plotting import figure
+# from jupyter_bokeh.widgets import BokehModel
+# from backtesting import set_bokeh_output
+### And then in a cell separate from those imports: 
+# output_notebook(resources=CDN)
+# set_bokeh_output(notebook=True) 
+#endregion    
+#
+# ---
+# Data precursor:
+# relies on fohlc: 
+#   fohlc (forecast + ohlc) is a pandas df with a datetime index, 
+#   - and then, from the json fields/columns in the CSVs in Judge Research's Dropbox,
+#     - cert_meas is a column labeled fc, 
+#     - ph_1 is a column labeled h_l_fc, 
+#     - ph_2 is a column labeled fc_rm, 
+#     - close_only is a vector of booleans from the close_only field
+#     - targ_price is the targ_price column
+#   - and then you can use your Open, High, Low, Close minute-by-minute data.
+# -----------------------
+
+#region ---  backtest func ---
+# NOTE:  There are a lot of unecessary parameters & lines here.  This is done to make 
+# the testing version of this backtest more flexible.  This versino overrides a lot of that  
+# in favore of the close_only = False criteria.
+class fc_thresh(backtesting.Strategy):
+
+    def init(self):
+        #region --- parameters ---
+        targ_mult = 10
+        stop_targ_mult = .47
+        self.max_trades = 1
+        max_t        = 15 #                  # minutes 
+        max_t2       = 1720 #                  # minutes 
+        fc_co_1      = .6
+        fc_rm_co_1   = .96
+        fc_co_n_1    = 1 - fc_co_1
+        fc_rm_co_n_1 = 1 - fc_rm_co_1
+        h_l_co_1     = .4 #                 # h_l_co_2 = h_l_co_1  
+        # targ construction parameters
+        fc_m         = 10 #                 # note h_l is of a vaguely appropriate  
+        h_l_m        = 1 #                  # scale, while fc is not.  
+        #endregion
+
+        #region --- Indicators for next ---
+        self.fc     = self.I(the_var, self.data.fc,     plot=False)
+        self.targ_pc= self.I(the_var, self.data.targ_price, plot=False)
+        self.fc_rm  = self.I(the_var, self.data.fc_rm,  plot=False)
+        self.h_l_fc = self.I(the_var, self.data.h_l_fc, plot=False)
+        self.ytfB   = self.I(the_var, self.data.ytfB,   plot=False)
+        self.o      = self.I(the_var, self.data.Open,   plot=False)
+        self.h      = self.I(the_var, self.data.High,   plot=False)
+        self.l      = self.I(the_var, self.data.Low,    plot=False)
+        self.c      = self.I(the_var, self.data.Close,  plot=False) # print(self.data.df.columns)
+        self.close_only   = self.I(the_var, self.data.close_only,  plot=False)
+        self.last_trade_t = self.data.index[0]
+        #endregion
+        
+        #region --- Target Series --- 
+        targ = self.c * (1 + self.targ_pc * targ_mult)
+        # stp  = self.c * (1 - self.targ_pc * targ_mult * stop_targ_mult)
+        if tok == 'btc':
+            stp = self.c * (1 - np.copysign(.023, self.targ_pc))
+        else:
+            stp = self.c * (1 - np.copysign(.042, self.targ_pc))
+
+        self.targ = self.I(the_var, targ, plot=False)
+        self.stp  = self.I(the_var, stp, plot=False)
+        #endregion
+
+        #region --- Global Features ---
+        self.max_t_str    = str(max_t) + ' min'     
+        self.max_t2_str    = str(max_t2) + ' min'     
+        # self.max_t_str    = '1 min'     
+
+        # change here to rm that was recorded in the thang
+        self.fc_co_1      = self.data.fc.s.quantile(fc_co_1)
+        self.fc_co_n_1    = self.data.fc.s.quantile(fc_co_n_1)
+        self.fc_rm_co_1   = self.data.fc_rm.s.quantile(fc_rm_co_1)
+        self.fc_rm_co_n_1 = self.data.fc_rm.s.quantile(fc_rm_co_n_1)
+        self.h_l_co_1     = self.data.h_l_fc.s.quantile(h_l_co_1)  
+        #endregion
+
+        #region --- Starting Values ---
+        # 
+        #endregion
+
+    def next(self):
+        #region --- 1. Features at t --- 
+        #t         = self.data.Datetime.s.iloc[-1]
+        t         = self.data.index[-1]
+        fc_t      = self.fc[-1]
+        fc_rm_t   = self.fc_rm[-1]
+        h_l_fc_t  = self.h_l_fc[ -1]    
+        targ_pc_t = self.targ_pc[-1]
+        targ_t    = self.targ[-1]
+        stp_t     = self.stp[-1]
+        close_only_t = not self.close_only[-1]
+        o_t, h_t, l_t, c_t = self.o[-1], self.h[-1], self.l[-1], self.c[-1]
+
+        #region --- 2. First handle existing positions --- 
+        for trade in self.trades:     
+            if hasattr(trade, 'revised_entry_time'):
+                entry_time = trade.revised_entry_time
+            else:
+                entry_time = trade.entry_time
+            if (t - entry_time) >= pd.Timedelta(self.max_t_str): 
+                if (t - entry_time) >= pd.Timedelta(self.max_t2_str): 
+                    trade.close()
+                if trade.is_short:
+                    if fc_t > self.last_exit_cond:
+                        trade.close()
+                if trade.is_long:
+                    if fc_t < self.last_exit_cond:
+                        trade.close()                
+                if trade.is_short:
+                    if l_t < trade.tp:
+                        trade.close()
+                if trade.is_long:
+                    if h_t > trade.tp:
+                        trade.close()
+        #endregion
+
+        #region --- 3. Consider taking new a new position ---
+        if fc_t != 0.0:
+            #region --- a. Conditioned on fc, fc_rm & vol ---   
+            if ((fc_t >= self.fc_co_1) & close_only_t):                
+                if len(self.trades) < self.max_trades:
+                    if (t - self.last_trade_t) >= pd.Timedelta(self.max_t_str): 
+                        self.last_trade_t = t
+                        self.buy(size=1, tp = targ_t, sl=stp_t)
+                        if len(self.trades) <= 1:
+                            self.last_exit_cond = -fc_t * 1.5, ##### or -.03                    
+                else:
+                    for trade in self.trades: trade.revised_entry_time = t                          
+            elif ((fc_t <= self.fc_co_n_1) & close_only_t):
+                if len(self.trades) < self.max_trades:
+                        self.last_trade_t = t
+                        self.sell(size=1, tp = targ_t, sl=stp_t) 
+                        if len(self.trades) <= 1:
+                            self.last_exit_cond = -fc_t * 1.5 ##### or .03        
+                else: 
+                    for trade in self.trades: 
+                        trade.revised_entry_time = t                          
+
+            for trade in self.trades:
+                if bool( np.sign(trade.size) != np.sign(self.trades[-1].size) ):
+                    trade.close()
+            #endregion
+            
+        #endregion 
+        if len(self.trades) > 0: # so you'll have an object to explore if
+            global s #           # and when it breaks
+            s = copy.deepcopy(self)
+        # ---
+
+
+
+
+#region --- example call:  
+# slip = 0.0005
+# bt = backtesting.Backtest(data=fohlc, strategy=fc_thresh, cash=fohlc.loc[fohlc.index[0],'Open'],
+#        margin=.01, trade_on_close=True, # margin arugment somewhat obviated by max_n_trades arg 
+#        exclusive_orders=False, hedging=False, commission=slip)
+# stats = bt.run()
+# # tab_2_pub = stats_tab2pub(x=stats, row_title=tok, slip=slip)             # function how i make backtest.py's trades object prettier.  
+# # display(HTML('<center>' + tab_2_pub.to_html(index=False) + '</center>')) # ask for the function if you care about appearance
+# bt.plot(resample=False) 
+#endregion
